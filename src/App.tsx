@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState, useEffect } from 'react';
+import React, { ChangeEvent, useState } from 'react';
 import './App.css';
 import AddButton from './components/AddButton';
 import FolderTreeView from './components/FolderTreeView';
@@ -12,16 +12,16 @@ function App() {
   // So this would not work for high resolution images. 
   const [uploads, setUploads] = useLocalStorage<any>('images', {"images": []})
 
-  useEffect(() => {
-    if (result !== null){
+  const updateData = (image: string) => {
+    setResult(image)
+    if (result !== null) {
       setUploads({ 'images': [...uploads.images, result] })
     }
-  }, [result]);
+  }
 
-    let onImageAdd = (e: ChangeEvent<HTMLInputElement>) => {
+  const onImageAdd = async (e: ChangeEvent<HTMLInputElement>) => {
       if (e.target.files && e.target.files[0]) {
-        const image = uploadImageToServer(e.target.files[0])
-        setResult(image)
+        uploadImageToServer(e.target.files[0],updateData)
       } else {
         console.error("No file was picked")
       }
@@ -40,3 +40,4 @@ function App() {
     
     export default App;
     
+

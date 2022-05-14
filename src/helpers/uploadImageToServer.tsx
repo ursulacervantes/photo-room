@@ -1,7 +1,7 @@
 import loadImage, { LoadImageResult } from 'blueimp-load-image';
 import { API_KEY, API_URL, BASE64_IMAGE_HEADER } from './../Constants';
 
-export default function uploadImageToServer (file: File): string | any {
+export default function uploadImageToServer(file: File, callback: Function) {
     loadImage(
         file,
         {
@@ -33,7 +33,7 @@ export default function uploadImageToServer (file: File): string | any {
             const result = await response.json();
             const base64Result = BASE64_IMAGE_HEADER + result.result_b64
             
-            return base64Result
+            callback(base64Result)
         })
 
         .catch(error => {
