@@ -2,6 +2,7 @@ import React, { ChangeEvent, useState, useEffect } from 'react';
 import './App.css';
 import AddButton from './components/AddButton';
 import Image from './components/Image';
+import FolderTreeView from './components/FolderTreeView';
 import useLocalStorage from './helpers/useLocalStorage';
 import loadImage, { LoadImageResult } from 'blueimp-load-image';
 import { API_KEY, API_URL, BASE64_IMAGE_HEADER } from './Constants';
@@ -11,19 +12,13 @@ function App() {
   // There is a limit of about 5MB for local storage. Converting a binary image to 
   // a base 64 encoded string will make it about 30% larger. 
   // So this would not work for high resolution images. 
-  const [uploads, setUploads] = useLocalStorage<string>('uploads', '{"uploads": []}')
+  const [uploads, setUploads] = useLocalStorage<any>('images', {"images": []})
 
   useEffect(() => {
     if (result !== null){
-      storeImage(result)
+      setUploads({ 'images': [...uploads.images, result] })
     }
   }, [result]);
-
-  const storeImage = (image: string) => {
-    let storage = JSON.parse(uploads).uploads
-    storage = [...storage, image]
-    setUploads(JSON.stringify({ 'uploads': storage }))
-  }
 
   const uploadImageToServer = (file: File) => {
     loadImage(
@@ -35,7 +30,7 @@ function App() {
       })
       .then(async (imageData: LoadImageResult) => {
         let image = imageData.image as HTMLCanvasElement
-        
+        console.log(imageData)
         let imageBase64 = image.toDataURL("image/png")
         let imageBase64Data = imageBase64.replace(BASE64_IMAGE_HEADER, "")
         let data = {
@@ -73,15 +68,13 @@ function App() {
       }
     }
 
-    const uploadedImages =  JSON.parse(uploads).uploads
-    
     return (
       <div className="App">
         <header className="App-header">
           <AddButton onImageAdd={onImageAdd}/>
           {result && <img src={result} width={300} alt="result from the API"/>}
-          {/* Folder content */}
-          {uploadedImages.map((image:string) => <Image image={image} />)}
+          {uploads.images.length ? <FolderTreeView items={uploads.images} />: null}
+          {uploads.images.map((image:string, index:string) => <Image image={image} key={`image-${index}`} />)}
         </header>
       </div>
       );
