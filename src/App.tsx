@@ -14,8 +14,8 @@ function App() {
 
   const updateData = (image: string) => {
     setResult(image)
-    if (result !== null) {
-      setUploads({ 'images': [...uploads.images, result] })
+    if (image !== null) {
+      setUploads({ 'images': [...uploads.images, image] })
     }
   }
 
@@ -29,11 +29,11 @@ function App() {
 
     return (
       <div className="App">
-        <header className="App-header">
+        <body className="App-header">
           <AddButton onImageAdd={onImageAdd}/>
           {result && <img src={result} width={300} alt="result from the API"/>}
           {uploads.images.length ? <FolderTreeView items={uploads.images} />: null}
-        </header>
+        </body>
       </div>
       );
     }
